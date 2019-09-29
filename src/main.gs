@@ -8,7 +8,7 @@ var CAL_ID = '';
 function doGet(e) {
     var slack = getSlackService();
     var template = HtmlService.createTemplate('<!DOCTYPE html>' +
-        '<p><? if (slackUser) { ?> Connected Slack (@<?= slackUser ?>)  <form action="<?= scriptUrl ?>" method="post"><input type="submit" name="revoke" value="Disconnect Slack"><? } else { ?><a class="btn btn-primary" href="<?= authorizationUrl ?>" target="_top">ConnectSlack</a><? } ?></p>');
+        '<? if (slackUser) { ?> Connected Slack (@<?= slackUser ?>)  <form action="<?= scriptUrl ?>" method="post"><input type="submit" name="revoke" value="Disconnect Slack"><? } else { ?><a class="btn btn-primary" href="<?= authorizationUrl ?>" target="_top">ConnectSlack</a><? } ?>');
     template.authorizationUrl = slack.getAuthorizationUrl();
     template.userEmail = Session.getActiveUser().getEmail();
     template.scriptUrl = getWebAppUrl();
@@ -20,17 +20,6 @@ function doGet(e) {
         }
     }
     return HtmlService.createHtmlOutput(template.evaluate());
-}
-function doPost(e) {
-    if (e.parameters.revoke) {
-        revoke();
-        return HtmlService.createHtmlOutput("\u9023\u643A\u89E3\u9664\u3057\u307E\u3057\u305F <a target=\"_top\" href=\"" + getWebAppUrl() + "\">\u623B\u308B</a>");
-    }
-}
-function revoke() {
-    getSlackService().reset();
-    ScriptApp.getProjectTriggers().forEach(function (trigger) { return ScriptApp.deleteTrigger(trigger); });
-    log("revoke: " + Session.getActiveUser().getEmail());
 }
 function updateStatusTrigger() {
     var slack = getSlackService();
